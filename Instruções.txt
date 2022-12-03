@@ -1,0 +1,42 @@
+Passos
+
+1- Executar o container do Docker
+docker run --name mysql_container -e MYSQL_ROOT_PASSWORD=*123456*HAS -dp 3306:3306 -d mysql/mysql-server:latest 
+
+onde
+
+-dp define a porta e faz o binding para que possa ser acessado remotamente
+--name define um nome para o container no docker
+-e define as variáveis de ambiente da aplicação
+MYSQL_ROOT_PASSWORD define a variável de ambiente para a senha padrão, nesse caso  *123456*HAS
+
+Necessário ter a imagem do mysql instalada previamente.
+
+
+
+Para executar o mysql dentro desse container:
+docker exec -it mysql_container mysql -uroot -p 
+
+
+
+Depois criar a base de dados
+
+Script:
+
+CREATE DATABASE aulaPC;
+USE aulaPC;
+CREATE TABLE Clientes ( CPF VARCHAR(11) NOT NULL PRIMARY KEY, NOME VARCHAR(255), IDADE INT);
+INSERT INTO Clientes VALUES ('12345612356', 'Joãozinho', 30);
+INSERT INTO Clientes VALUES ('98765432156', 'Mariazinha', 31);
+
+
+Já podemos realizar consultas no banco utilizando o console do mysql, porém não conseguiremos realizar consultas externas;
+GRANT ALL PRIVILEGES ON * TO root@localhost;
+
+Para configurar o .env importamos a lib do dotenv no projeto e configuramos as variáveis de ambiente.
+
+DB_NAME=aulaPC
+DB_USER=root
+DB_HOST=172.17.0.1
+DB_PASSWORD=*123456*HAS
+DB_PORT=3306

@@ -1,30 +1,44 @@
 //Importa a biblioteca do Express
 import express from 'express'
 import connection from './src/db.js'
-import cors from 'cors'
+import * as dotenv from "dotenv";
 
 const app = express()
-const corsOptions = {
-   origin: "http://localhost:80"
- }
-
-app.use(cors(corsOptions))
+dotenv.config()
+app.use(express.json())
 
 app.get("/", (req, res) => {
-   console.log("Bateu aqui")
-   res.send("Oie")
+   console.log("Requisição realizada no endpoint /")
 })
 
 app.get("/Clientes", (req, res) => {
-   console.log("Bateu aqui em clientes")
-   res.send("Oie")
+   connection.connect( function (err) { 
+      if (err) console.log(err)
+   });
+   connection.query("SELECT * FROM Clientes", function (error,result,fields){
+      if (err){throw(error)}
+      console.log(result)
+      res.send(result)
+   })
 })
 
-app.get("/Carros", (req, res) => {
-   console.log("Bateu aqui em carros")
-   res.send("Oie")
-})
+app.post("/Cliente", (req, res) => {
+   connection.connect( function (err) { 
+      if (err) console.log(err)
+   });
 
-connection.connect( (err) => { if (err) console.log(err)});
+   //pega os valores no body da requisição
+   const cliente = req.body
+
+   //opção usando string composta simples
+   // const sql = 'insert into Clientes values ('+ cliente.cpf +','+ cliente.nome +','+ cliente.idade +')'
+   //opção usando stringLiterals ao invés de uma string composta simples
+   const sql = `INSERT INTO Clientes values ( ${cliente.cpf}, ${cliente.nome}, ${cliente.idade})`
+   connection.query(sql, function (error,result,fields){
+      if (error){throw(error)}
+      console.log("Número de registros adicionados" + result.affectedRows);
+      res.status(200).send("Registro adicionado com sucesso")
+   })
+})
 
 app.listen(3000, () => console.log("Servidor rodando na porta 3000"))
