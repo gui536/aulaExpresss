@@ -8,18 +8,21 @@ dotenv.config()
 app.use(express.json())
 
 app.get("/", (req, res) => {
+   connection.connect( function (err) {
+   if (err) console.log(err)
+   });
    console.log("Requisição realizada no endpoint /")
 })
 
 app.get("/Clientes", (req, res) => {
    connection.connect( function (err) { 
       if (err) console.log(err)
+         connection.query("SELECT * FROM Clientes", function (err,result,fields){
+            console.log(result)
+            res.send(result)
+         })
    });
-   connection.query("SELECT * FROM Clientes", function (error,result,fields){
-      if (err){throw(error)}
-      console.log(result)
-      res.send(result)
-   })
+   
 })
 
 app.post("/Cliente", (req, res) => {
